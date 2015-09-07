@@ -51,5 +51,24 @@ namespace TwitchBot {
 
             return message;
         }
+
+        public string Inspect() {
+            string message = "";
+
+            message += "{ preffix = \"" + Preffix + "\"";
+            message += ", command = \"" + Command + "\"";
+
+            message += ", args = [";
+
+            if(Args.Length > 0)
+                message += "\"" + Args[0] + "\"";
+
+            for(int i = 1; i < Args.Length; i++)
+                message += ", \"" + Args[i] + "\"";
+
+            message += "], trailing = \"" + Trailing + "\" }";
+
+            return message;
+        }
     }
 }

@@ -20,6 +20,7 @@ namespace TwitchBot {
             outputStream.WriteLine("PASS " + password);
             outputStream.WriteLine("NICK " + username);
             outputStream.WriteLine("USER " + username + " 8 * :" + username);
+            outputStream.WriteLine("CAP REQ :twitch.tv/membership");
             outputStream.Flush();
         }
 
@@ -27,7 +28,6 @@ namespace TwitchBot {
             this.channel = channel;
 
             outputStream.WriteLine("JOIN #" + channel);
-            outputStream.WriteLine("CAP REQ :twitch.tv/membership");
             outputStream.Flush();
         }
 
@@ -45,8 +45,8 @@ namespace TwitchBot {
             return new IrcMessage(message);
         }
 
-        //public ChatMessage ReadChatMessage() {
-        //    return new ChatMessage(ReadIrcMessage());
-        //}
+        public ChatMessage ReadChatMessage() {
+            return new ChatMessage(ReadIrcMessage());
+        }
     }
 }

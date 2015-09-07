@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace TwitchBot {
     public class Program {
@@ -8,6 +9,7 @@ namespace TwitchBot {
                 bot.Run();
             } catch (Exception e) {
                 Console.WriteLine(e.Message);
+                File.WriteAllText("error.log", e.ToString());
                 Console.ReadKey();
                 return;
             }
