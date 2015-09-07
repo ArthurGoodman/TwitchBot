@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 namespace TwitchBot {
-    class IrcMessage {
+    public class IrcMessage {
         public string Preffix { get; private set; }
         public string Command { get; private set; }
         public string[] Args { get; private set; }

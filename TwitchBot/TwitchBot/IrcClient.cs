@@ -2,7 +2,7 @@
 using System.Net.Sockets;
 
 namespace TwitchBot {
-    class IrcClient {
+    public class IrcClient {
         private string username;
         private string channel;
 
@@ -27,6 +27,7 @@ namespace TwitchBot {
             this.channel = channel;
 
             outputStream.WriteLine("JOIN #" + channel);
+            outputStream.WriteLine("CAP REQ :twitch.tv/membership");
             outputStream.Flush();
         }
 

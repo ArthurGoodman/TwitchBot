@@ -1,5 +1,5 @@
 ﻿//namespace TwitchBot {
-//    class ChatMessage {
+//    public class ChatMessage {
 //        public string Username { get; private set; }
 //        public string Message { get; private set; }
 

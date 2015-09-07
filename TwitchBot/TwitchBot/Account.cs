@@ -1,9 +1,8 @@
 ﻿using System;
 using System.IO;
-namespace TwitchBot {
-    class Account {
-        private const string errorMessage = "error: invalid account information";
 
+namespace TwitchBot {
+    public class Account {
         public string Username { get; private set; }
         public string Password { get; private set; }
 
@@ -15,28 +14,15 @@ namespace TwitchBot {
         public static Account Load(string fileName) {
             StreamReader inputStream = new StreamReader(File.OpenRead(fileName));
 
-            Tokenizer tokenizer = new Tokenizer(inputStream.ReadToEnd());
+            ITokenizer<string> tokenizer = new SimpleTokenizer(inputStream.ReadToEnd());
 
-            string username;
-            string password;
+            string username, password;
 
-            try {
-                username = tokenizer.GetToken();
-                password = tokenizer.GetToken();
-            } catch (Exception e) {
-                if (e.Message == "eof")
-                    throw new Exception(errorMessage);
+            username = tokenizer.GetToken();
+            password = tokenizer.GetToken();
 
-                return null;
-            }
-
-            try {
-                tokenizer.GetToken();
-                throw new Exception(errorMessage);
-            } catch (Exception e) {
-                if (e.Message != "eof")
-                    throw e;
-            }
+            if (username == null || password == null || tokenizer.HasToken())
+                throw new Exception("error: invalid account information");
 
             return new Account(username, password);
         }
