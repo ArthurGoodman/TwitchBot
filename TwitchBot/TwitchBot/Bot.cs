@@ -95,9 +95,9 @@ namespace TwitchBot {
         private string ReadRandomLine(string fileName) {
             try {
                 string[] lines = File.ReadAllLines(fileName);
-                return lines[random.Next() % lines.Length];
+                return lines.Length == 0 ? "" : lines[random.Next() % lines.Length];
             } catch (Exception e) {
-                System.Console.WriteLine(e.ToString());
+                System.Console.WriteLine(e.Message);
                 return "";
             }
         }
