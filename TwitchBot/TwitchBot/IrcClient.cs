@@ -1,14 +1,16 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Net.Sockets;
 
 namespace TwitchBot {
     public class IrcClient {
         private string username;
-        private string channel;
 
         private TcpClient tcpClient;
         private StreamReader inputStream;
         private StreamWriter outputStream;
+
+        public string Channel { get; private set; }
 
         public IrcClient(string ip, int port, string username, string password) {
             this.username = username;
@@ -25,7 +27,7 @@ namespace TwitchBot {
         }
 
         public void JoinRoom(string channel) {
-            this.channel = channel;
+            this.Channel = channel;
 
             outputStream.WriteLine("JOIN #" + channel);
             outputStream.Flush();
@@ -37,11 +39,15 @@ namespace TwitchBot {
         }
 
         public void SendChatMessage(string message) {
-            SendIrcMessage(":" + username + "!" + username + "@" + username + ".tmi.twitch.tv PRIVMSG #" + channel + " :" + message);
+            SendIrcMessage(":" + username + "!" + username + "@" + username + ".tmi.twitch.tv PRIVMSG #" + Channel + " :" + message);
         }
 
         public IrcMessage ReadIrcMessage() {
             string message = inputStream.ReadLine();
+
+            if (message == null)
+                throw new Exception("error: failed to connect");
+
             return new IrcMessage(message);
         }
 

@@ -9,6 +9,7 @@ namespace TwitchBot {
                 bot.Run();
             } catch (Exception e) {
                 Console.WriteLine(e.Message);
+                Console.WriteLine("<press any key to continue>");
                 File.WriteAllText("error.log", e.ToString());
                 Console.ReadKey();
                 return;
