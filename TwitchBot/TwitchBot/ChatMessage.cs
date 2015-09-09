@@ -8,7 +8,7 @@
             Message = ircMessage.Trailing;
         }
 
-        public new string ToString() {
+        public override string ToString() {
             return (Username != "" ? Username + ": " : "") + Message;
         }
 

@@ -35,7 +35,7 @@ namespace TwitchBot {
             Args = args.ToArray();
         }
 
-        public new string ToString() {
+        public override string ToString() {
             string message = "";
 
             if (Preffix != "")

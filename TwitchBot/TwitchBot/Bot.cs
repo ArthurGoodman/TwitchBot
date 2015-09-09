@@ -60,7 +60,6 @@ namespace TwitchBot {
 
             while (true) {
                 IrcMessage ircMessage = ircClient.ReadIrcMessage();
-                System.Console.WriteLine(ircMessage.ToString());
 
                 if (ircMessage.Command == "MODE") {
                     if (ircMessage.Args[1] == "+o")
@@ -70,10 +69,14 @@ namespace TwitchBot {
                 } else if (ircMessage.Command == "PING")
                     ircClient.SendIrcMessage("PONG :" + ircMessage.Trailing);
 
-                if (ircMessage.Command != "PRIVMSG" || stopwatch.Elapsed.TotalMilliseconds < settings.Interval)
+                if (ircMessage.Command != "PRIVMSG" || stopwatch.Elapsed.TotalMilliseconds < settings.Interval) {
+                    Console.WriteLine(ircMessage.ToString());
                     continue;
+                }
 
                 ChatMessage chatMessage = new ChatMessage(ircMessage);
+
+                Console.WriteLine(chatMessage.ToString());
 
                 string message = chatMessage.Message;
                 string username = chatMessage.Username;
