@@ -78,14 +78,23 @@ namespace TwitchBot {
                 string message = chatMessage.Message;
                 string username = chatMessage.Username;
 
-                if (settings.Name != "" && Regex.Match(message, @"\b(?i)" + settings.Name + @"\b").Success)
-                    Say(ReadRandomLine(settings.PhrasesFile));
-                else
-                    foreach (KeyValuePair<string, Command> command in commands)
-                        if (message == command.Key || message.StartsWith(command.Key + " ")) {
-                            command.Value.Execute(username, message);
-                            break;
-                        }
+                bool isCommand = false;
+
+                foreach (KeyValuePair<string, Command> command in commands)
+                    if (message == command.Key || message.StartsWith(command.Key + " ")) {
+                        command.Value.Execute(username, message);
+                        isCommand = true;
+                        break;
+                    }
+
+                if (!isCommand) {
+                    if (settings.Name != "" && Regex.Match(message, @"\b(?i)" + settings.Name + @"\b").Success)
+                        Say(ReadRandomLine(settings.PhrasesFile));
+
+                    if (raffle && Regex.Match(message, @"\b(?i)raffle\b").Success)
+                        if (!participants.Contains(username))
+                            participants.Add(username);
+                }
             }
         }
 
@@ -297,16 +306,6 @@ namespace TwitchBot {
                 participants = new List<string>();
 
                 Say("The raffle has started! Type \"raffle\" to enter.");
-                return 0;
-            }));
-
-            commands.Add("raffle", new BuiltinCommand(0, Command.AccessLevel.Regular, (string username, string[] args) => {
-                if (!raffle)
-                    return 1;
-
-                if (!participants.Contains(username))
-                    participants.Add(username);
-
                 return 0;
             }));
 
