@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Xml.Serialization;
 
 namespace TwitchBot {
@@ -31,12 +32,12 @@ namespace TwitchBot {
         public string Color { get; set; }
 
         public Settings() {
-            AccountFile = "account.txt";
+            AccountFile = "%userprofile%/account";
             Channel = "";
 
-            CommandsFile = "commands.txt";
-            QuotesFile = "quotes.txt";
-            PhrasesFile = "phrases.txt";
+            CommandsFile = "%userprofile%/commands.txt";
+            QuotesFile = "%userprofile%/quotes.txt";
+            PhrasesFile = "%userprofile%/phrases.txt";
 
             Greeting = "";
             Name = "";
@@ -44,6 +45,8 @@ namespace TwitchBot {
             Interval = 1000;
 
             Color = "green";
+
+            ExpandEnvironmentVariables();
         }
 
         public static Settings Load(string fileName) {
@@ -63,7 +66,16 @@ namespace TwitchBot {
             serializer.Serialize(stream, settings);
             stream.Close();
 
+            settings.ExpandEnvironmentVariables();
+
             return settings;
+        }
+
+        private void ExpandEnvironmentVariables() {
+            AccountFile = Environment.ExpandEnvironmentVariables(AccountFile);
+            CommandsFile = Environment.ExpandEnvironmentVariables(CommandsFile);
+            QuotesFile = Environment.ExpandEnvironmentVariables(QuotesFile);
+            PhrasesFile = Environment.ExpandEnvironmentVariables(PhrasesFile);
         }
     }
 }

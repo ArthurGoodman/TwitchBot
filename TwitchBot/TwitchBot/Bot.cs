@@ -60,7 +60,6 @@ namespace TwitchBot {
 
             while (true) {
                 IrcMessage ircMessage = ircClient.ReadIrcMessage();
-
                 System.Console.WriteLine(ircMessage.ToString());
 
                 if (ircMessage.Command == "MODE") {
@@ -68,9 +67,10 @@ namespace TwitchBot {
                         Mods.Add(ircMessage.Args[2]);
                     else if (ircMessage.Args[1] == "-o")
                         Mods.Add(ircMessage.Args[2]);
-                }
+                } else if (ircMessage.Command == "PING")
+                    ircClient.SendIrcMessage("PONG :" + ircMessage.Trailing);
 
-                if (stopwatch.Elapsed.TotalMilliseconds < settings.Interval)
+                if (ircMessage.Command != "PRIVMSG" || stopwatch.Elapsed.TotalMilliseconds < settings.Interval)
                     continue;
 
                 ChatMessage chatMessage = new ChatMessage(ircMessage);
@@ -150,6 +150,11 @@ namespace TwitchBot {
                     args[2] = s[1];
                 }
 
+                if (level == Command.AccessLevel.Owner && username != Channel) {
+                    Say(username + " -> Mods cannot add #owner commands.");
+                    return 1;
+                }
+
                 commands.Add(args[1], new UserCommand(level, args[2]));
 
                 SaveCommands();
@@ -198,6 +203,11 @@ namespace TwitchBot {
                     args[2] = s[1];
                 }
 
+                if (level == Command.AccessLevel.Owner && username != Channel) {
+                    Say(username + " -> Mods cannot add #owner commands.");
+                    return 1;
+                }
+
                 if (!commands.ContainsKey(args[1])) {
                     Say(username + " -> Command " + args[1] + " doesn't exist.");
                     return 1;
@@ -208,6 +218,11 @@ namespace TwitchBot {
 
                 if (command is BuiltinCommand) {
                     Say(username + " -> Cannot edit built-in commands.");
+                    return 1;
+                }
+
+                if (command.Level == Command.AccessLevel.Owner && username != Channel) {
+                    Say(username + " -> Mods cannot edit #owner commands.");
                     return 1;
                 }
 
@@ -236,6 +251,11 @@ namespace TwitchBot {
 
                 if (command is BuiltinCommand) {
                     Say(username + " -> Cannot delete built-in commands.");
+                    return 1;
+                }
+
+                if (command.Level == Command.AccessLevel.Owner && username != Channel) {
+                    Say(username + " -> Mods cannot delete #owner commands.");
                     return 1;
                 }
 
@@ -301,6 +321,14 @@ namespace TwitchBot {
                 else
                     Say("The winner is " + participants[random.Next() % participants.Count] + "!");
 
+                return 0;
+            }));
+
+            commands.Add("!raid", new BuiltinCommand(1, Command.AccessLevel.Mod, (string username, string[] args) => {
+                if (args.Length == 1)
+                    return 1;
+
+                Say("Thank you so much for the raid! Please go check out their channel at http://twitch.tv/" + args[1]);
                 return 0;
             }));
         }

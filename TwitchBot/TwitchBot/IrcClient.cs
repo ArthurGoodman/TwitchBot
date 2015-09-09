@@ -50,9 +50,5 @@ namespace TwitchBot {
 
             return new IrcMessage(message);
         }
-
-        public ChatMessage ReadChatMessage() {
-            return new ChatMessage(ReadIrcMessage());
-        }
     }
 }

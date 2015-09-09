@@ -7,18 +7,19 @@ namespace TwitchBot {
         };
 
         private int argc;
-        protected AccessLevel accessLevel;
+
+        public AccessLevel Level { get; private set; }
 
         public Command(int argc, AccessLevel accessLevel) {
             this.argc = argc;
-            this.accessLevel = accessLevel;
+            Level = accessLevel;
         }
 
         public void Execute(string username, string message) {
-            if (accessLevel == Command.AccessLevel.Owner && username != Bot.Instance.Channel)
+            if (Level == Command.AccessLevel.Owner && username != Bot.Instance.Channel)
                 return;
 
-            if (accessLevel == Command.AccessLevel.Mod && !Bot.Instance.Mods.Contains(username))
+            if (Level == Command.AccessLevel.Mod && !Bot.Instance.Mods.Contains(username))
                 return;
 
             Perform(username, message.Split(new[] { ' ' }, argc + 1, StringSplitOptions.RemoveEmptyEntries));

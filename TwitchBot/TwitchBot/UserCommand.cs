@@ -16,7 +16,7 @@ namespace TwitchBot {
         public override string ToString() {
             string s = "";
 
-            switch (accessLevel) {
+            switch (Level) {
                 case AccessLevel.Regular:
                     s = "#reg";
                     break;

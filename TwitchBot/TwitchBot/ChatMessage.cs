@@ -4,13 +4,8 @@
         public string Message { get; private set; }
 
         public ChatMessage(IrcMessage ircMessage) {
-            Username = "";
-
-            if (ircMessage.Command == "PRIVMSG") {
-                Username = ircMessage.Preffix.Substring(0, ircMessage.Preffix.IndexOf("!"));
-                Message = ircMessage.Trailing;
-            } else
-                Message = ircMessage.ToString();
+            Username = ircMessage.Preffix.Substring(0, ircMessage.Preffix.IndexOf("!"));
+            Message = ircMessage.Trailing;
         }
 
         public new string ToString() {
