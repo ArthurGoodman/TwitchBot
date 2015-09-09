@@ -18,7 +18,7 @@ namespace TwitchBot {
         private Stopwatch stopwatch;
 
         private bool raffle;
-        private List<string> participants;
+        private List<string> entrants;
 
         public string Channel { get { return ircClient.Channel; } }
         public List<string> Mods { get; private set; }
@@ -92,8 +92,8 @@ namespace TwitchBot {
                         Say(ReadRandomLine(settings.PhrasesFile));
 
                     if (raffle && Regex.Match(message, @"\b(?i)raffle\b").Success)
-                        if (!participants.Contains(username))
-                            participants.Add(username);
+                        if (!entrants.Contains(username))
+                            entrants.Add(username);
                 }
             }
         }
@@ -303,7 +303,7 @@ namespace TwitchBot {
 
                 raffle = true;
 
-                participants = new List<string>();
+                entrants = new List<string>();
 
                 Say("The raffle has started! Type \"raffle\" to enter.");
                 return 0;
@@ -315,10 +315,20 @@ namespace TwitchBot {
 
                 raffle = false;
 
-                if (participants.Count == 0)
+                if (entrants.Count == 0)
                     Say("No one entered.");
-                else
-                    Say("The winner is " + participants[random.Next() % participants.Count] + "!");
+                else {
+                    string str = "";
+
+                    str += entrants[0];
+
+                    for (int i = 1; i < entrants.Count; i++)
+                        str += ", " + entrants[i];
+
+                    Say("Entrants: " + str + ".");
+
+                    Say("The winner is " + entrants[random.Next() % entrants.Count] + "!");
+                }
 
                 return 0;
             }));
