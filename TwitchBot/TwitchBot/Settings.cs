@@ -53,14 +53,10 @@ namespace TwitchBot {
             Settings settings = new Settings();
 
             XmlSerializer serializer = new XmlSerializer(typeof(Settings));
-            Stream stream;
-
-            try {
-                stream = File.OpenRead(fileName);
-                settings = (Settings)serializer.Deserialize(stream);
-                stream.Close();
-            } catch {
-            }
+            
+            Stream stream = File.OpenRead(fileName);
+            settings = (Settings)serializer.Deserialize(stream);
+            stream.Close();
 
             stream = File.OpenWrite(fileName);
             serializer.Serialize(stream, settings);
