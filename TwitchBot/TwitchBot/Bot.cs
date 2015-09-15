@@ -296,19 +296,22 @@ namespace TwitchBot {
                 return 0;
             }));
 
-            commands.Add("!raffle", new BuiltinCommand(0, Command.AccessLevel.Owner, (string username, string[] args) => {
-                if (raffle) {
-                    raffle = false;
-
-                    Say("The raffle is closed.");
-                    return 0;
-                }
-
+            commands.Add("!startraffle", new BuiltinCommand(0, Command.AccessLevel.Owner, (string username, string[] args) => {
                 raffle = true;
 
                 entrants = new List<string>();
 
                 Say("The raffle has started! Type \"raffle\" to enter.");
+                return 0;
+            }));
+
+            commands.Add("!closeraffle", new BuiltinCommand(0, Command.AccessLevel.Owner, (string username, string[] args) => {
+                if (raffle) {
+                    raffle = false;
+
+                    Say("The raffle is closed.");
+                }
+
                 return 0;
             }));
 
