@@ -16,8 +16,11 @@ namespace TwitchBot {
         [XmlElement("quotes")]
         public string QuotesFile { get; set; }
 
-        [XmlElement("phrases")]
-        public string PhrasesFile { get; set; }
+        [XmlElement("nameReactions")]
+        public string NameReactionsFile { get; set; }
+
+        [XmlElement("fullNameReactions")]
+        public string FullNameReactionsFile { get; set; }
 
         [XmlElement("name")]
         public string Name { get; set; }
@@ -37,7 +40,8 @@ namespace TwitchBot {
 
             CommandsFile = "%userprofile%/commands.txt";
             QuotesFile = "%userprofile%/quotes.txt";
-            PhrasesFile = "%userprofile%/phrases.txt";
+            NameReactionsFile = "%userprofile%/nameReactions.txt";
+            FullNameReactionsFile = "%userprofile%/fullNameReactions.txt";
 
             Greeting = "";
             Name = "";
@@ -71,7 +75,8 @@ namespace TwitchBot {
             AccountFile = Environment.ExpandEnvironmentVariables(AccountFile);
             CommandsFile = Environment.ExpandEnvironmentVariables(CommandsFile);
             QuotesFile = Environment.ExpandEnvironmentVariables(QuotesFile);
-            PhrasesFile = Environment.ExpandEnvironmentVariables(PhrasesFile);
+            NameReactionsFile = Environment.ExpandEnvironmentVariables(NameReactionsFile);
+            FullNameReactionsFile = Environment.ExpandEnvironmentVariables(FullNameReactionsFile);
         }
     }
 }

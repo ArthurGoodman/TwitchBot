@@ -10,6 +10,7 @@ namespace TwitchBot {
 
         private IrcClient ircClient;
         private Settings settings;
+        private Account account;
 
         private Random random;
 
@@ -43,7 +44,7 @@ namespace TwitchBot {
         private void Initialize() {
             settings = Settings.Load("settings.xml");
 
-            Account account = Account.Load(settings.AccountFile);
+            account = Account.Load(settings.AccountFile);
             ircClient = new IrcClient("irc.twitch.tv", 6667, account.Username, account.Password);
 
             SetupCommands();
@@ -92,7 +93,9 @@ namespace TwitchBot {
 
                 if (!isCommand) {
                     if (settings.Name != "" && Regex.Match(message, @"\b(?i)" + settings.Name + @"\b").Success)
-                        Say(ReadRandomLine(settings.PhrasesFile));
+                        Say(ReadRandomLine(settings.NameReactionsFile));
+                    else if (Regex.Match(message, @"\b(?i)" + account.Username + @"\b").Success)
+                        Say(ReadRandomLine(settings.FullNameReactionsFile));
 
                     if (raffle && Regex.Match(message, @"\b(?i)raffle\b").Success)
                         if (!entrants.Contains(username))
@@ -315,7 +318,7 @@ namespace TwitchBot {
                 return 0;
             }));
 
-            commands.Add("!winner", new BuiltinCommand(0, Command.AccessLevel.Owner, (string username, string[] args) => {
+            commands.Add("!rafflewinner", new BuiltinCommand(0, Command.AccessLevel.Owner, (string username, string[] args) => {
                 if (!raffle)
                     return 1;
 
