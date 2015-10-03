@@ -300,7 +300,7 @@ namespace TwitchBot {
             commands.Add("!startraffle", new BuiltinCommand(0, Command.AccessLevel.Owner, (string username, string[] args) => {
                 raffle = true;
 
-                entrants = new List<string>();
+                entrants.Clear();
 
                 Say("The raffle has started! Type \"raffle\" to enter.");
                 return 0;
@@ -309,7 +309,6 @@ namespace TwitchBot {
             commands.Add("!closeraffle", new BuiltinCommand(0, Command.AccessLevel.Owner, (string username, string[] args) => {
                 if (raffle) {
                     raffle = false;
-
                     Say("The raffle is closed.");
                 }
 
