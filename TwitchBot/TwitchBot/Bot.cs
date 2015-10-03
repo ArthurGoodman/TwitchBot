@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace TwitchBot {
@@ -12,14 +13,14 @@ namespace TwitchBot {
         private Settings settings;
         private Account account;
 
-        private Random random;
+        private Random random = new Random();
 
-        private Dictionary<string, Command> commands;
+        private Dictionary<string, Command> commands = new Dictionary<string, Command>();
 
-        private Stopwatch stopwatch;
+        private Stopwatch stopwatch = new Stopwatch();
 
         private bool raffle;
-        private List<string> entrants;
+        private List<string> entrants = new List<string>();
 
         public string Channel { get { return ircClient.Channel; } }
         public List<string> Mods { get; private set; }
@@ -27,11 +28,6 @@ namespace TwitchBot {
         public Bot() {
             Instance = this;
 
-            random = new Random();
-
-            commands = new Dictionary<string, Command>();
-
-            stopwatch = new Stopwatch();
             stopwatch.Start();
 
             raffle = false;
@@ -70,7 +66,7 @@ namespace TwitchBot {
                 } else if (ircMessage.Command == "PING")
                     ircClient.SendIrcMessage("PONG :" + ircMessage.Trailing);
 
-                if (ircMessage.Command != "PRIVMSG" || stopwatch.Elapsed.TotalMilliseconds < settings.Interval) {
+                if (ircMessage.Command != "PRIVMSG") {
                     Console.WriteLine(ircMessage.ToString());
                     continue;
                 }
@@ -81,6 +77,13 @@ namespace TwitchBot {
 
                 string message = chatMessage.Message;
                 string username = chatMessage.Username;
+
+                if (raffle && Regex.Match(message, @"\b(?i)raffle\b").Success)
+                    if (!entrants.Contains(username))
+                        entrants.Add(username);
+
+                if (stopwatch.Elapsed.TotalMilliseconds < settings.Interval)
+                    continue;
 
                 bool isCommand = false;
 
@@ -96,10 +99,6 @@ namespace TwitchBot {
                         Say(ReadRandomLine(settings.NameReactionsFile));
                     else if (Regex.Match(message, @"\b(?i)" + account.Username + @"\b").Success)
                         Say(ReadRandomLine(settings.FullNameReactionsFile));
-
-                    if (raffle && Regex.Match(message, @"\b(?i)raffle\b").Success)
-                        if (!entrants.Contains(username))
-                            entrants.Add(username);
                 }
             }
         }
@@ -319,25 +318,28 @@ namespace TwitchBot {
             }));
 
             commands.Add("!rafflewinner", new BuiltinCommand(0, Command.AccessLevel.Owner, (string username, string[] args) => {
-                if (!raffle)
-                    return 1;
-
-                raffle = false;
-
                 if (entrants.Count == 0)
                     Say("No one entered.");
                 else {
-                    string str = "";
-
-                    str += entrants[0];
-
-                    for (int i = 1; i < entrants.Count; i++)
-                        str += ", " + entrants[i];
-
-                    Say("Entrants: " + str + ".");
-
+                    Say("Entrants: " + ListEntrants() + ".");
                     Say("The winner is " + entrants[random.Next() % entrants.Count] + "!");
                 }
+
+                raffle = false;
+
+                return 0;
+            }));
+
+            commands.Add("!entrants", new BuiltinCommand(0, Command.AccessLevel.Regular, (string username, string[] args) => {
+                if (!raffle)
+                    return 1;
+
+                if (entrants.Count == 0) {
+                    Say("No one entered.");
+                    return 0;
+                }
+
+                Say("Raffle ongoing, type \"raffle\" to enter. Entrants: " + ListEntrants() + ".");
 
                 return 0;
             }));
@@ -377,6 +379,17 @@ namespace TwitchBot {
                     lines.Add(command.Key + " " + command.Value.ToString());
 
             File.WriteAllLines(settings.CommandsFile, lines);
+        }
+
+        private string ListEntrants() {
+            string str = "";
+
+            str += entrants[0];
+
+            for (int i = 1; i < entrants.Count; i++)
+                str += ", " + entrants[i];
+
+            return str;
         }
     }
 }
