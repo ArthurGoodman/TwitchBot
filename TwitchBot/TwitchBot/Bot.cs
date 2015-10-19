@@ -291,7 +291,7 @@ namespace TwitchBot {
                     return 1;
                 }
 
-                File.AppendAllText(settings.QuotesFile, args[1] + "\n");
+                File.AppendAllText(settings.QuotesFile, args[1] + Environment.NewLine);
 
                 Say(username + " -> Quote added.");
                 return 0;
