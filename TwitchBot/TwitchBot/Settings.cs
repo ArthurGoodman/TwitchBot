@@ -62,6 +62,8 @@ namespace TwitchBot {
             settings = (Settings)serializer.Deserialize(stream);
             stream.Close();
 
+            File.Delete(fileName);
+
             stream = File.OpenWrite(fileName);
             serializer.Serialize(stream, settings);
             stream.Close();

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace TwitchBot {
@@ -109,7 +110,7 @@ namespace TwitchBot {
 
         private string ReadRandomLine(string fileName) {
             try {
-                string[] lines = File.ReadAllLines(fileName);
+                string[] lines = File.ReadAllLines(fileName).Where(line => line != "").ToArray();
                 return lines.Length == 0 ? "" : lines[random.Next() % lines.Length];
             } catch (Exception e) {
                 System.Console.WriteLine(e.Message);
@@ -118,7 +119,7 @@ namespace TwitchBot {
         }
 
         private void SetupCommands() {
-            commands.Add("!addcom", new BuiltinCommand(2, Command.AccessLevel.Mod, (string username, string[] args) => {
+            commands.Add("!addcom", new BuiltinCommand(2, Command.AccessLevel.Regular, (string username, string[] args) => {
                 if (args.Length == 1) {
                     Say(username + " -> No command specified.");
                     return 1;
@@ -168,15 +169,17 @@ namespace TwitchBot {
                     return 1;
                 }
 
-                commands.Add(args[1], new UserCommand(level, args[2]));
+                UserCommand command = new UserCommand(level, args[2]);
 
-                SaveCommands();
+                commands.Add(args[1], command);
+
+                AddCom(args[1], command);
 
                 Say(username + " -> Command " + args[1] + " added.");
                 return 0;
             }));
 
-            commands.Add("!editcom", new BuiltinCommand(2, Command.AccessLevel.Mod, (string username, string[] args) => {
+            commands.Add("!editcom", new BuiltinCommand(2, Command.AccessLevel.Regular, (string username, string[] args) => {
                 if (args.Length == 1) {
                     Say(username + " -> No command specified.");
                     return 1;
@@ -240,15 +243,18 @@ namespace TwitchBot {
                 }
 
                 commands.Remove(args[1]);
-                commands.Add(args[1], new UserCommand(level, args[2]));
 
-                SaveCommands();
+                UserCommand newCommand = new UserCommand(level, args[2]);
+
+                commands.Add(args[1], newCommand);
+
+                EditCom(args[1], newCommand);
 
                 Say(username + " -> Command " + args[1] + " edited.");
                 return 0;
             }));
 
-            commands.Add("!delcom", new BuiltinCommand(1, Command.AccessLevel.Mod, (string username, string[] args) => {
+            commands.Add("!delcom", new BuiltinCommand(1, Command.AccessLevel.Regular, (string username, string[] args) => {
                 if (args.Length == 1) {
                     Say(username + " -> No command specified.");
                     return 1;
@@ -274,7 +280,7 @@ namespace TwitchBot {
 
                 commands.Remove(args[1]);
 
-                SaveCommands();
+                DelCom(args[1], (UserCommand)command);
 
                 Say(username + " -> Command " + args[1] + " deleted.");
                 return 0;
@@ -291,7 +297,7 @@ namespace TwitchBot {
                     return 1;
                 }
 
-                File.AppendAllText(settings.QuotesFile, args[1] + Environment.NewLine);
+                File.AppendAllText(settings.QuotesFile, Environment.NewLine + args[1]);
 
                 Say(username + " -> Quote added.");
                 return 0;
@@ -357,7 +363,7 @@ namespace TwitchBot {
                 return;
             }
 
-            string[] lines = File.ReadAllLines(settings.CommandsFile);
+            string[] lines = File.ReadAllLines(settings.CommandsFile).Where(line => line != "").ToArray();
 
             foreach (string str in lines) {
                 string[] s = str.Split(new[] { ' ' }, 2);
@@ -369,14 +375,40 @@ namespace TwitchBot {
             }
         }
 
-        private void SaveCommands() {
-            List<string> lines = new List<string>();
+        private void AddCom(string name, UserCommand command) {
+            File.AppendAllText(settings.CommandsFile, Environment.NewLine + name + " " + command);
+        }
 
-            foreach (KeyValuePair<string, Command> command in commands)
-                if (command.Value is UserCommand)
-                    lines.Add(command.Key + " " + command.Value.ToString());
+        private void EditCom(string name, UserCommand command) {
+            List<string> newLines = new List<string>();
 
-            File.WriteAllLines(settings.CommandsFile, lines);
+            string[] lines = File.ReadAllLines(settings.CommandsFile);
+
+            foreach (string line in lines) {
+                string[] s = line.Split(new[] { ' ' }, 2);
+
+                if (s[0] != name)
+                    newLines.Add(line);
+                else
+                    newLines.Add(name + " " + command);
+            }
+
+            File.WriteAllLines(settings.CommandsFile, newLines);
+        }
+
+        private void DelCom(string name, UserCommand command) {
+            List<string> newLines = new List<string>();
+
+            string[] lines = File.ReadAllLines(settings.CommandsFile);
+
+            foreach (string line in lines) {
+                string[] s = line.Split(new[] { ' ' }, 2);
+
+                if (s[0] != name)
+                    newLines.Add(line);
+            }
+
+            File.WriteAllLines(settings.CommandsFile, newLines);
         }
 
         private string ListEntrants() {
