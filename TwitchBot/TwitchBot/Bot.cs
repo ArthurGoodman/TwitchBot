@@ -119,7 +119,7 @@ namespace TwitchBot {
         }
 
         private void SetupCommands() {
-            commands.Add("!addcom", new BuiltinCommand(2, Command.AccessLevel.Regular, (string username, string[] args) => {
+            commands.Add("!addcom", new BuiltinCommand(2, Command.AccessLevel.Mod, (string username, string[] args) => {
                 if (args.Length == 1) {
                     Say(username + " -> No command specified.");
                     return 1;
@@ -179,7 +179,7 @@ namespace TwitchBot {
                 return 0;
             }));
 
-            commands.Add("!editcom", new BuiltinCommand(2, Command.AccessLevel.Regular, (string username, string[] args) => {
+            commands.Add("!editcom", new BuiltinCommand(2, Command.AccessLevel.Mod, (string username, string[] args) => {
                 if (args.Length == 1) {
                     Say(username + " -> No command specified.");
                     return 1;
@@ -254,7 +254,7 @@ namespace TwitchBot {
                 return 0;
             }));
 
-            commands.Add("!delcom", new BuiltinCommand(1, Command.AccessLevel.Regular, (string username, string[] args) => {
+            commands.Add("!delcom", new BuiltinCommand(1, Command.AccessLevel.Mod, (string username, string[] args) => {
                 if (args.Length == 1) {
                     Say(username + " -> No command specified.");
                     return 1;
