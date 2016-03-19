@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text.RegularExpressions;
 
 namespace TwitchBot {
@@ -41,7 +42,13 @@ namespace TwitchBot {
             settings = Settings.Load("settings.xml");
 
             account = Account.Load(settings.AccountFile);
-            ircClient = new IrcClient("irc.twitch.tv", 6667, account.Username, account.Password);
+
+            WebClient client = new WebClient();
+            string cluster = client.DownloadString("https://decapi.me/twitch/clusters?channel=" + settings.Channel);
+            Console.WriteLine("cluster: " + cluster);
+
+            string server = cluster == "main" ? "irc.twitch.tv" : "irc.chat.twitch.tv";
+            ircClient = new IrcClient(server, 6667, account.Username, account.Password);
 
             SetupCommands();
             LoadCommands();
