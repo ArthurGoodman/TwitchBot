@@ -86,8 +86,11 @@ namespace TwitchBot {
                 string username = chatMessage.Username;
 
                 if (raffle && Regex.Match(message, @"\b(?i)raffle\b").Success)
-                    if (!entrants.Contains(username))
+                    if (!entrants.Contains(username)) {
                         entrants.Add(username);
+                        Say("/w " + username + " You have successfully entered the raffle.");
+                    } else
+                        Say("/w " + username + " You are already in the raffle.");
 
                 if (stopwatch.Elapsed.TotalMilliseconds < settings.Interval)
                     continue;
@@ -120,7 +123,7 @@ namespace TwitchBot {
                 string[] lines = File.ReadAllLines(fileName).Where(line => line != "").ToArray();
                 return lines.Length == 0 ? "" : lines[random.Next() % lines.Length];
             } catch (Exception e) {
-                System.Console.WriteLine(e.Message);
+                Console.WriteLine(e.Message);
                 return "";
             }
         }

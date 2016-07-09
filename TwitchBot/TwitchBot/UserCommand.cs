@@ -20,7 +20,7 @@ namespace TwitchBot {
                 case AccessLevel.Regular:
                     s = "#reg";
                     break;
-               
+
                 case AccessLevel.Mod:
                     s = "#mod";
                     break;

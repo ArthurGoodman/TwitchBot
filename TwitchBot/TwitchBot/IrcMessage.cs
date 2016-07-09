@@ -60,10 +60,10 @@ namespace TwitchBot {
 
             message += ", args = [";
 
-            if(Args.Length > 0)
+            if (Args.Length > 0)
                 message += "\"" + Args[0] + "\"";
 
-            for(int i = 1; i < Args.Length; i++)
+            for (int i = 1; i < Args.Length; i++)
                 message += ", \"" + Args[i] + "\"";
 
             message += "], trailing = \"" + Trailing + "\" }";

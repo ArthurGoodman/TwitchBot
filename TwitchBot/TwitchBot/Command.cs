@@ -16,10 +16,10 @@ namespace TwitchBot {
         }
 
         public void Execute(string username, string message) {
-            if (Level == Command.AccessLevel.Owner && username != Bot.Instance.Channel)
+            if (Level == AccessLevel.Owner && username != Bot.Instance.Channel)
                 return;
 
-            if (Level == Command.AccessLevel.Mod && !Bot.Instance.Mods.Contains(username))
+            if (Level == AccessLevel.Mod && !Bot.Instance.Mods.Contains(username))
                 return;
 
             Perform(username, message.Split(new[] { ' ' }, argc + 1, StringSplitOptions.RemoveEmptyEntries));
